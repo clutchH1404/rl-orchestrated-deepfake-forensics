@@ -1,0 +1,49 @@
+# Academic & Research Benchmark Datasets Configuration
+# Deepfake Detection & Forensic Verification Datasets
+
+datasets:
+  faceforensics_plus_plus:
+    name: "FaceForensics++ (FF++)"
+    description: "Benchmark dataset containing Deepfakes, Face2Face, FaceSwap, NeuralTextures, and FaceShifter manipulations."
+    modalities: ["video", "spatial", "temporal"]
+    base_path: "./datasets/faceforensics_pp"
+    subsets:
+      c23_compressed: "manipulated_sequences/Deepfakes/c23/videos"
+      raw_uncompressed: "manipulated_sequences/Deepfakes/raw/videos"
+      pristine: "original_sequences/youtube/c23/videos"
+    evaluation_split: "test_splits.json"
+    enabled: false
+
+  celeb_df_v2:
+    name: "Celeb-DF (v2)"
+    description: "High-quality deepfake video dataset with reduced visual artifacts and diverse lighting."
+    modalities: ["video", "spatial", "temporal"]
+    base_path: "./datasets/celeb_df_v2"
+    subsets:
+      celeb_real: "Celeb-real"
+      celeb_synthesis: "Celeb-synthesis"
+      youtube_real: "YouTube-real"
+    enabled: false
+
+  asvspoof_2021:
+    name: "ASVspoof 2021 (Logical Access & Speech Deepfakes)"
+    description: "State-of-the-art synthetic speech, text-to-speech, and voice conversion forensic dataset."
+    modalities: ["audio"]
+    base_path: "./datasets/asvspoof_2021"
+    subsets:
+      eval: "LA/ASVspoof2021_LA_eval"
+    enabled: false
+
+  dfdc:
+    name: "Deepfake Detection Challenge (DFDC)"
+    description: "Large-scale dataset with varied actors, complex lighting, and audio-visual manipulations."
+    modalities: ["video", "audio"]
+    base_path: "./datasets/dfdc"
+    enabled: false
+
+  in_the_wild_sample:
+    name: "ForensicGuard Benchmark Validation Suite"
+    description: "Curated local verification subset for testing multimodal pipeline without requiring multi-gigabyte downloads."
+    modalities: ["video", "audio", "image", "context"]
+    base_path: "./datasets/benchmark_sample"
+    enabled: true

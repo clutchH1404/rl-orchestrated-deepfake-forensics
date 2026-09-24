@@ -1,0 +1,75 @@
+# Python
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyTorch / Models
+*.pth
+*.pt
+*.onnx
+*.bin
+weights/*
+!weights/.gitkeep
+
+# Datasets
+datasets/*
+!datasets/.gitkeep
+data/
+*.mp4
+*.avi
+*.mov
+*.wav
+*.mp3
+
+# Storage / Artifacts
+storage/
+temp/
+reports/pdf/*
+!reports/pdf/.gitkeep
+reports/json/*
+!reports/json/.gitkeep
+logs/*
+!logs/.gitkeep
+*.db
+*.sqlite3
+tests/.source_test_artifacts/
+
+# Node / Frontend
+node_modules/
+frontend/dist/
+frontend/build/
+.npm
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment & IDE
+.env
+.env.local
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

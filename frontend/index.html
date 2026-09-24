@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080d12" />
+    <title>VERITAS // Forensic Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <div class="ambient" aria-hidden="true"></div>
+    <aside class="sidebar">
+      <div>
+        <div class="brand"><span class="brand-mark">V</span><div><strong>VERITAS</strong><small>SYS_LEVEL_01 // SEC_AUTH</small></div></div>
+        <div class="engine-state"><i></i> FORENSIC ENGINE <span id="engine-status">CHECKING</span></div>
+        <nav>
+          <p>PRIMARY COCKPIT</p><a href="#command-center" class="active">▣ Command Center <b>LIVE</b></a>
+          <p>INVESTIGATION OPS</p><a href="#intake">＋ New Investigation</a><a href="#case-data">▱ Active Case</a>
+          <p>FORENSICS SUITE</p><a href="#source-investigation">⌕ Source Investigation</a><a href="#case-data">▧ Evidence Explorer</a>
+          <p>AI AGENTS &amp; RL</p><a href="#models">◌ Model Status</a><a class="disabled" aria-disabled="true">↯ RL Orchestration <em>SOON</em></a>
+        </nav>
+      </div>
+      <div class="side-footer"><span>API <b id="api-status">CONNECTING</b></span><span>MODE <b id="mode-status">—</b></span><button id="focus-intake" class="secondary">TERMINAL INGEST</button></div>
+    </aside>
+
+    <header><div><strong>VERITAS // TACTICAL FORENSICS</strong><span>/</span><code id="case-label">NO ACTIVE CASE</code></div><div class="top-status"><i></i> SYSTEM READY <span>UTC</span><time id="utc-time"></time></div></header>
+
+    <main id="command-center">
+      <section class="hero"><div class="eyebrow">RL-ORCHESTRATED // MULTI-AGENT FORENSIC INTELLIGENCE</div><h1>Investigate media.<br/><span>Preserve evidence.</span></h1><p>Secure chain-of-custody intake, measured source-candidate retrieval, and explicit model availability—without fabricated assessments.</p><a href="#intake" class="button">INITIALIZE CASE <span>→</span></a></section>
+
+      <section id="intake" class="panel intake">
+        <div class="section-title"><div><span>MOD_01 // CASE INTAKE</span><h2>Evidence acquisition</h2></div><small>SUPPORTED: IMAGE / VIDEO / AUDIO</small></div>
+        <form id="upload-form">
+          <label class="dropzone" id="dropzone" for="media-file"><input id="media-file" name="upload" type="file" accept=".mp4,.mov,.avi,.mkv,.wav,.mp3,.flac,.m4a,.jpg,.jpeg,.png,.webp" required /><b>DROP EVIDENCE OR SELECT FILE</b><span>Original media is retained unchanged; a separate processing copy is created.</span><output id="selected-file">NO FILE SELECTED</output></label>
+          <div class="form-grid"><label>CASE TITLE<input name="title" value="Forensic Verification Case" /></label><label>INVESTIGATOR<input name="investigator" value="Forensic Analyst" /></label><label>ANALYSIS PROFILE<select name="execution_profile"><option>FAST</option><option selected>BALANCED</option><option>DEEP_FORENSIC</option></select></label><button class="button" type="submit">CAPTURE &amp; HASH</button></div>
+        </form>
+        <p class="feedback" id="upload-feedback" aria-live="polite"></p>
+      </section>
+
+      <section id="case-data" class="grid-2">
+        <article class="panel"><div class="section-title"><div><span>MOD_02 // CHAIN OF CUSTODY</span><h2>Case telemetry</h2></div><code id="case-status">AWAITING INTAKE</code></div><dl id="metadata"><div><dt>CASE ID</dt><dd>—</dd></div><div><dt>SHA-256</dt><dd>—</dd></div><div><dt>MEDIA</dt><dd>—</dd></div><div><dt>SIZE</dt><dd>—</dd></div><div><dt>TECHNICAL DATA</dt><dd>—</dd></div><div><dt>PROCESSING HASH</dt><dd>—</dd></div></dl></article>
+        <article id="models" class="panel"><div class="section-title"><div><span>MOD_03 // MODEL REGISTRY</span><h2>Inference availability</h2></div><small id="model-device">—</small></div><div class="model-list" id="model-list"><p class="muted">Loading model registry…</p></div><p class="notice">Models without validated local weights are shown as unavailable. No predictions are synthesized in the interface.</p></article>
+      </section>
+
+      <section id="source-investigation" class="panel provenance">
+        <div class="section-title"><div><span>MOD_04 // PROVENANCE VERIFICATION &amp; VECTOR RETRIEVAL</span><h2>Source investigation</h2></div><button class="button secondary" id="retrieve-button" disabled>SEARCH LOCAL SOURCES</button></div>
+        <p class="notice">Source retrieval ranks visual leads from the analyst-managed local repository. A similarity match is never automatically designated as an original source.</p>
+        <div id="retrieval-empty" class="empty-state">Run intake, then search <code>datasets/source_repository</code> for similarity-ranked candidates.</div>
+        <div id="retrieval-results" hidden></div>
+      </section>
+
+      <section class="panel disclaimer"><span>ⓘ</span><p><b>FORENSIC DISCLAIMER:</b> This system provides an AI-assisted forensic assessment and should not be treated as definitive proof of authenticity or manipulation. Source candidates require investigator validation and independently verifiable provenance.</p></section>
+    </main>
+    <template id="candidate-template"><article class="candidate"><div class="candidate-head"><div><span class="candidate-class"></span><h3 class="candidate-name"></h3></div><strong class="candidate-score"></strong></div><div class="metric-grid"></div><p class="candidate-note"></p></article></template>
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>

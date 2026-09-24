@@ -1,0 +1,68 @@
+system:
+  name: "RL-Orchestrated Forensic Verification System"
+  version: "1.0.0-research"
+  academic_profile: "Capstone Final Year - Advanced Multimodal AI Forensics"
+  disclaimer: "This system provides an AI-assisted forensic assessment and should not be treated as definitive proof of authenticity or manipulation."
+
+pipeline:
+  default_mode: "BALANCED" # Options: FAST, BALANCED, DEEP_FORENSIC
+  allow_partial_modalities: true
+  save_intermediate_artifacts: true
+  extract_sample_keyframes: 16
+  audio_sample_rate: 16000
+  spectrogram_n_fft: 1024
+  spectrogram_hop_length: 512
+
+agents:
+  spatial:
+    enabled: true
+    model_name: "EfficientNet-B0"
+    input_resolution: [224, 224]
+    gradcam_target_layer: "features.8"
+    confidence_calibration_temperature: 1.2
+    weight_default: 0.25
+
+  temporal:
+    enabled: true
+    model_name: "Swin-Tiny-Transformer"
+    sequence_length: 16
+    window_size: 7
+    feature_dim: 768
+    weight_default: 0.25
+
+  audio:
+    enabled: true
+    model_name: "wav2vec2-base"
+    sample_rate: 16000
+    spectral_analysis: true
+    shap_explainability: true
+    weight_default: 0.25
+
+  context:
+    enabled: true
+    model_name: "DeBERTa-v3-base"
+    claim_extraction: true
+    entity_extraction: true
+    external_verification: true
+    weight_default: 0.25
+
+rl_orchestrator:
+  algorithm: "PPO"
+  policy_type: "ActorCritic"
+  state_dimension: 8
+  action_dimension: 10
+  discount_factor: 0.99
+  clip_ratio: 0.2
+  learning_rate: 0.0003
+  entropy_coef: 0.01
+  max_iterations: 3
+  reward_weights:
+    accuracy: 1.0
+    cross_modal_penalty: 0.5
+    computation_penalty: 0.1
+    uncertainty_reduction: 0.3
+
+evidence_fusion:
+  method: "RL_CALIBRATED_BAYESIAN" # Options: STATIC_WEIGHTED, DEMPSTER_SHAFER, RL_CALIBRATED_BAYESIAN
+  entropy_weight: 0.2
+  disagreement_penalty: 0.3
