@@ -58,7 +58,7 @@ class AudioProcessor:
                 case_id=self.case_id,
                 details={"error": str(e)},
             )
-            return np.zeros(16000, dtype=np.float32), 16000
+            raise ValueError(f"Unable to decode WAV audio at {self.audio_path}: {e}") from e
 
     def compute_spectrogram(
         self,

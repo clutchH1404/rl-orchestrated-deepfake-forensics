@@ -46,15 +46,15 @@
       </section>
 
       <section id="source-investigation" class="panel provenance">
-        <div class="section-title"><div><span>MOD_04 // PROVENANCE VERIFICATION &amp; VECTOR RETRIEVAL</span><h2>Source investigation</h2></div><button class="button secondary" id="retrieve-button" disabled>SEARCH LOCAL SOURCES</button></div>
-        <p class="notice">Source retrieval ranks visual leads from the analyst-managed local repository. A similarity match is never automatically designated as an original source.</p>
-        <div id="retrieval-empty" class="empty-state">Run intake, then search <code>datasets/source_repository</code> for similarity-ranked candidates.</div>
+        <div class="section-title"><div><span>MOD_04 // PROVENANCE VERIFICATION &amp; VECTOR RETRIEVAL</span><h2>Find a possible source image</h2></div><button class="button secondary" id="retrieve-button" disabled>SEARCH FOR SOURCE IMAGE</button></div>
+        <p class="notice">Searches the analyst-managed local reference repository for visually similar images. This can surface a possible source for review; no original is claimed without independent verification.</p>
+        <div id="retrieval-empty" class="empty-state">Upload a suspect image, then search <code>datasets/source_repository</code> for matching reference images. This search is available independently of model detection.</div>
         <div id="retrieval-results" hidden></div>
       </section>
 
       <section class="panel disclaimer"><span>ⓘ</span><p><b>FORENSIC DISCLAIMER:</b> This system provides an AI-assisted forensic assessment and should not be treated as definitive proof of authenticity or manipulation. Source candidates require investigator validation and independently verifiable provenance.</p></section>
     </main>
-    <template id="candidate-template"><article class="candidate"><div class="candidate-head"><div><span class="candidate-class"></span><h3 class="candidate-name"></h3></div><strong class="candidate-score"></strong></div><div class="metric-grid"></div><p class="candidate-note"></p></article></template>
+    <template id="candidate-template"><article class="candidate"><div class="candidate-head"><div><span class="candidate-class"></span><h3 class="candidate-name"></h3></div><strong class="candidate-score"></strong></div><a class="candidate-open" target="_blank" rel="noopener noreferrer">Open reference image</a><img class="candidate-preview" alt="Ranked local source candidate preview" loading="lazy"/><div class="metric-grid"></div><p class="candidate-note"></p></article></template>
     <script type="module" src="src/app.js"></script>
   </body>
 </html>

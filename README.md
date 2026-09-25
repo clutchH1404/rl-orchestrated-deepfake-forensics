@@ -46,6 +46,16 @@ POST /api/v1/cases/{case_id}/source-retrieval
 
 Read [docs/SOURCE_PROVENANCE_RETRIEVAL.md](docs/SOURCE_PROVENANCE_RETRIEVAL.md) before interpreting any candidate.
 
+## Research dataset manifest
+
+Training data utilities live under `training/data_pipeline/`, separate from production inference and notebooks. Configure local dataset paths, labels, metadata files, and official split manifests in `configs/datasets.yaml`. The manifest builder never downloads data:
+
+```powershell
+python -m training.data_pipeline.build_manifest --config configs/datasets.yaml --output datasets/manifests/train.jsonl
+```
+
+It writes normalized JSONL records and a `.summary.json` count report. Missing configured folders are listed in the command output. Video frames and audio are loaded lazily through the helpers in `preprocess.py`; training-only seeded augmentations are in `augment.py`. Face cropping is opt-in because detection/cropping choices affect benchmark results.
+
 ## Test
 
 ```powershell

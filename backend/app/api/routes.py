@@ -1,6 +1,7 @@
 """REST endpoints available during the Phase 1 / intake baseline."""
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from backend.app.core.database import Base, engine, get_db
@@ -23,13 +24,15 @@ def health() -> dict:
 
 @router.get("/models/status")
 def model_status() -> dict:
-    # Honest status only: no weights means inference is unavailable, not simulated.
+    # The repository has no model loader yet; file presence alone never means a model is ready.
     paths = {"spatial": settings.EFFICIENTNET_WEIGHTS, "temporal": settings.SWIN_WEIGHTS,
              "audio": settings.WAV2VEC2_WEIGHTS, "context": settings.DEBERTA_WEIGHTS,
              "ppo": settings.PPO_POLICY_WEIGHTS}
     return {"execution_profile": settings.EXECUTION_PROFILE, "device": settings.DEVICE,
-            "models": {name: {"weights_available": path.exists(), "path": str(path)} for name, path in paths.items()},
-            "inference_notice": "Model inference is unavailable until validated model weights are installed."}
+            "models": {name: {"weights_available": path.exists(), "loaded": False, "ready": False,
+                              "status": "WEIGHTS_PRESENT_NO_LOADER" if path.exists() else "UNAVAILABLE_NO_WEIGHTS",
+                              "path": str(path)} for name, path in paths.items()},
+            "inference_notice": "No inference model loaders are implemented; models are unavailable even if weight files are present."}
 
 
 @router.post("/cases", response_model=CaseResponse, status_code=201)
@@ -71,7 +74,13 @@ def run_source_retrieval(case_id: str, db: Session = Depends(get_db)) -> dict:
         if not frames:
             raise HTTPException(status_code=422, detail="No retrievable video frame was extracted.")
         query_path = frames[0][2]
-    result = SourceProvenanceAgent().retrieve(query_path)
+    try:
+        result = SourceProvenanceAgent().retrieve(query_path)
+    except Exception as exc:
+        from backend.app.core.logging import log_forensic_event
+        log_forensic_event("source_retrieval_failed", case_id=case_id, agent="source_attribution",
+                           details={"error": str(exc)})
+        raise HTTPException(status_code=422, detail="The uploaded image could not be decoded for source retrieval.") from exc
     existing = db.query(SourceRetrievalModel).filter_by(case_id=case_id).one_or_none()
     if existing:
         existing.status, existing.result_json = result["overall_status"], json.dumps(result)
@@ -87,3 +96,22 @@ def get_source_retrieval(case_id: str, db: Session = Depends(get_db)) -> dict:
     if not record:
         raise HTTPException(status_code=404, detail="No source retrieval has been run for this case.")
     return json.loads(record.result_json)
+
+
+@router.get("/cases/{case_id}/source-retrieval/candidates/{candidate_index}/image")
+def get_source_candidate_image(case_id: str, candidate_index: int, db: Session = Depends(get_db)) -> FileResponse:
+    """Serve a ranked local reference without exposing arbitrary filesystem paths."""
+    record = db.query(SourceRetrievalModel).filter_by(case_id=case_id).one_or_none()
+    if not record:
+        raise HTTPException(status_code=404, detail="No source retrieval has been run for this case.")
+    candidates = json.loads(record.result_json).get("candidates", [])
+    if candidate_index < 0 or candidate_index >= len(candidates):
+        raise HTTPException(status_code=404, detail="Source candidate not found.")
+    candidate = candidates[candidate_index]
+    candidate_path = Path(candidate.get("candidate_path", "")).resolve()
+    repository = settings.SOURCE_REPOSITORY_DIR.resolve()
+    if candidate.get("provider") != "local_repository" or not candidate_path.is_relative_to(repository):
+        raise HTTPException(status_code=404, detail="Source candidate image is unavailable.")
+    if not candidate_path.is_file() or candidate_path.suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp"}:
+        raise HTTPException(status_code=404, detail="Source candidate image is unavailable.")
+    return FileResponse(candidate_path, filename=candidate_path.name)

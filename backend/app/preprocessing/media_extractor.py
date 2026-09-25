@@ -58,7 +58,7 @@ class MediaExtractor:
         duration: Optional[float] = None
         resolution: Optional[str] = None
         fps: Optional[float] = None
-        has_video = modality in ["video", "image"]
+        has_video = modality == "video"
         has_audio = modality in ["video", "audio"]
         sample_rate: Optional[int] = None
         channels: Optional[int] = None

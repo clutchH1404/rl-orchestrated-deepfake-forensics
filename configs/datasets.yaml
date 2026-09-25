@@ -8,9 +8,29 @@ datasets:
     modalities: ["video", "spatial", "temporal"]
     base_path: "./datasets/faceforensics_pp"
     subsets:
-      c23_compressed: "manipulated_sequences/Deepfakes/c23/videos"
-      raw_uncompressed: "manipulated_sequences/Deepfakes/raw/videos"
+      deepfakes_c23: "manipulated_sequences/Deepfakes/c23/videos"
+      deepfakes_raw: "manipulated_sequences/Deepfakes/raw/videos"
+      face2face_c23: "manipulated_sequences/Face2Face/c23/videos"
+      faceswap_c23: "manipulated_sequences/FaceSwap/c23/videos"
+      faceshifter_c23: "manipulated_sequences/FaceShifter/c23/videos"
+      neuraltextures_c23: "manipulated_sequences/NeuralTextures/c23/videos"
       pristine: "original_sequences/youtube/c23/videos"
+    labels:
+      deepfakes_c23: fake
+      deepfakes_raw: fake
+      face2face_c23: fake
+      faceswap_c23: fake
+      faceshifter_c23: fake
+      neuraltextures_c23: fake
+      pristine: real
+    manipulation_types:
+      deepfakes_c23: deepfakes
+      deepfakes_raw: deepfakes
+      face2face_c23: face2face
+      faceswap_c23: faceswap
+      faceshifter_c23: faceshifter
+      neuraltextures_c23: neuraltextures
+      pristine: none
     evaluation_split: "test_splits.json"
     enabled: false
 
@@ -23,6 +43,10 @@ datasets:
       celeb_real: "Celeb-real"
       celeb_synthesis: "Celeb-synthesis"
       youtube_real: "YouTube-real"
+    labels:
+      celeb_real: real
+      celeb_synthesis: fake
+      youtube_real: real
     enabled: false
 
   asvspoof_2021:
@@ -39,6 +63,10 @@ datasets:
     description: "Large-scale dataset with varied actors, complex lighting, and audio-visual manipulations."
     modalities: ["video", "audio"]
     base_path: "./datasets/dfdc"
+    metadata_files: ["metadata.json"]
+    subsets:
+      videos: "."
+    labels: {}
     enabled: false
 
   in_the_wild_sample:
@@ -47,3 +75,22 @@ datasets:
     modalities: ["video", "audio", "image", "context"]
     base_path: "./datasets/benchmark_sample"
     enabled: true
+
+pipeline:
+  seed: 42
+  split_ratios:
+    train: 0.8
+    validation: 0.1
+    test: 0.1
+  frame_count: 16
+  frame_size: [224, 224]
+  face_crop: false
+  audio_sample_rate: 16000
+  augment:
+    jpeg_probability: 0.5
+    jpeg_quality: [45, 90]
+    blur_probability: 0.1
+    brightness_probability: 0.25
+    gain_probability: 0.3
+    noise_probability: 0.2
+    noise_std: 0.003

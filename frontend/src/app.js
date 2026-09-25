@@ -32,11 +32,19 @@ function displayRetrieval(result) {
   if (!candidates.length) { results.innerHTML = `<div class="empty-state"><strong>${result.overall_status}</strong><br/>No source candidate was located in the configured local repository. ${result.disclaimer}</div>`; return; }
   results.innerHTML = `<p class="notice">${result.disclaimer}</p>`;
   const template = $("#candidate-template");
-  candidates.forEach((candidate) => {
+  candidates.forEach((candidate, index) => {
     const fragment = template.content.cloneNode(true);
     $(".candidate-class", fragment).textContent = candidate.classification;
     $(".candidate-name", fragment).textContent = candidate.candidate_path || "Unavailable candidate";
     $(".candidate-score", fragment).textContent = candidate.source_confidence !== undefined ? `${(candidate.source_confidence * 100).toFixed(2)}%` : "—";
+    if (candidate.provider === "local_repository" && candidate.source_confidence !== undefined) {
+      const imageUrl = `${API}/cases/${encodeURIComponent(activeCaseId)}/source-retrieval/candidates/${index}/image`;
+      $(".candidate-open", fragment).href = imageUrl;
+      $(".candidate-preview", fragment).src = imageUrl;
+    } else {
+      $(".candidate-open", fragment).hidden = true;
+      $(".candidate-preview", fragment).hidden = true;
+    }
     const metrics = [["P-HASH DISTANCE", candidate.phash_distance], ["D-HASH DISTANCE", candidate.dhash_distance], ["SSIM", candidate.structural_similarity], ["CROP SIMILARITY", candidate.crop_similarity]];
     $(".metric-grid", fragment).innerHTML = metrics.map(([label, value]) => `<div class="metric"><label>${label}</label><b>${value ?? "—"}</b></div>`).join("");
     $(".candidate-note", fragment).textContent = candidate.verification || candidate.error || "No verification data.";
@@ -69,7 +77,7 @@ $("#retrieve-button").addEventListener("click", async () => {
   const button = $("#retrieve-button"); button.disabled = true; button.textContent = "SEARCHING…";
   try { displayRetrieval(await request(`/cases/${activeCaseId}/source-retrieval`, { method: "POST" })); }
   catch (error) { $("#retrieval-empty").hidden = false; $("#retrieval-empty").textContent = error.message; }
-  finally { button.disabled = false; button.textContent = "SEARCH LOCAL SOURCES"; }
+  finally { button.disabled = false; button.textContent = "SEARCH FOR SOURCE IMAGE"; }
 });
 
 async function bootstrap() {

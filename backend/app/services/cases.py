@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.core.config import settings
 from backend.app.core.logging import log_forensic_event
-from backend.app.core.security import create_forensic_working_copy, validate_upload
+from backend.app.core.security import create_forensic_working_copy, validate_media_content, validate_upload
 from backend.app.models.db_models import CaseModel, MediaModel
 from backend.app.preprocessing.media_extractor import MediaExtractor
 from backend.app.schemas.case import CaseResponse, MediaMetadata
@@ -73,6 +73,7 @@ async def create_case_from_upload(
                 if written > max_bytes:
                     raise HTTPException(status_code=413, detail=f"File exceeds {settings.MAX_UPLOAD_SIZE_MB} MB limit.")
                 destination.write(chunk)
+        validate_media_content(original_path, filename.rsplit(".", 1)[-1].lower())
         working_path, original_hash, processed_hash = create_forensic_working_copy(case_id, original_path, filename)
         extractor = MediaExtractor(working_path, case_id)
         metadata = extractor.extract_metadata(original_hash, processed_hash)

@@ -1,4 +1,6 @@
-import base64
+from io import BytesIO
+
+from PIL import Image
 
 from fastapi.testclient import TestClient
 
@@ -19,7 +21,9 @@ def test_rejects_unsupported_upload():
 
 
 def test_image_intake_creates_chain_of_custody():
-    png = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScL5hgAAAABJRU5ErkJggg==")
+    buffer = BytesIO()
+    Image.new("RGB", (16, 16), "navy").save(buffer, format="PNG")
+    png = buffer.getvalue()
     with TestClient(app) as client:
         response = client.post("/api/v1/cases", files={"upload": ("sample.png", png, "image/png")})
         assert response.status_code == 201
@@ -28,4 +32,12 @@ def test_image_intake_creates_chain_of_custody():
     assert len(payload["media"]["original_sha256"]) == 64
     assert payload["media"]["original_sha256"] == payload["media"]["processed_sha256"]
     assert payload["media"]["modality_type"] == "image"
+    assert payload["media"]["has_video"] is False
     assert detail.status_code == 200
+
+
+def test_rejects_corrupt_image_before_creating_case():
+    with TestClient(app) as client:
+        response = client.post("/api/v1/cases", files={"upload": ("broken.png", b"not an image", "image/png")})
+    assert response.status_code == 422
+    assert "invalid or corrupted" in response.json()["detail"]

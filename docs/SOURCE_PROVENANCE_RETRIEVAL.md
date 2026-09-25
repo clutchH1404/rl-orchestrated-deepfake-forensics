@@ -10,4 +10,6 @@ Scores label a result as `HIGH-CONFIDENCE SOURCE CANDIDATE` (at least 0.88), `PO
 
 Use `POST /api/v1/cases/{case_id}/source-retrieval` for an image case, or a video case to search with an extracted representative frame. The endpoint is manual until the visual-forensics pipeline produces a real manipulation result. It never presumes manipulation and does not use AI reconstruction.
 
+The frontend shows an image preview for each ranked local candidate. The image is served through `GET /api/v1/cases/{case_id}/source-retrieval/candidates/{candidate_index}/image`; the API only serves candidate files inside the configured local repository. This lets an investigator inspect or open a possible source image while retaining its candidate status.
+
 External reverse-image/source providers are deliberately unimplemented until a legally permitted provider, API adapter, and user-provided credentials are configured. Their absence is returned as `EXTERNAL SEARCH: UNAVAILABLE`.
